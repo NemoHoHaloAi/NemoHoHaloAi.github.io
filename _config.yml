@@ -7,14 +7,14 @@ highlighter: rouge
 markdown: kramdown
 disqus: Ho Loong disqus
 google_analytics: Ho Loong google analytics
-title: Ho Loong out title
+title: Ho Loong
 
 defaults:
   -
     scope:
       path: "" # empty string for all files
     values:
-      title: Ho Loong Title
+      title: Where Miracle Happen!
 
 description: Machine Learning, Data Analysis, Dev, Psychology, WOW
 author:
