@@ -1,0 +1,166 @@
+---
+layout: post
+title: 日志文件分割、命名
+categories: [脚本, Python]
+tags: [python, ubuntu, aispeech]
+description: 针对超大日志文件进行按行切割、按时间戳命名的Python脚本
+---
+
+工作中经常会收到测试同学、客户同学提供的日志文件，其中不乏几百M一G的也都有，毕竟压测一晚上产生的日志量还是很可观的，xDxD，因此不可避免的需要对日志进行分割，通常定位问题需要针对时间点，因此最好对分割后的日志文件使用文件中日志的开始、结束时间点来命名，这样使用起来最为直观，下面给大家分享两个脚本，分别作分割、命名，希望能够给大家提供一点点帮助；
+
+## 大文件分割
+
+用法：
+1. python split_big_file.py
+2. 输入文件全路径名
+3. 输入期望的分割后每个小文件的行数
+4. Just wait.
+
+代码如下：
+
+		# -*- coding:utf-8 -*-
+
+		import os,re,shutil
+		import platform
+
+		sys_name = platform.system().lower()
+		SPLIT_CHAR = '\\' if sys_name.find('windows') != -1 else '/'
+
+		print('input big files`s path:')
+		_path = raw_input()
+		names = []
+		pathes = []
+		if os.path.isfile(_path):
+			print('is file')
+			names.append(_path)
+		else:
+			print('is nothing')
+		'''
+		elif os.path.isdir(_path):
+			print('This is dir')
+			pathes = os.listdir(_path)
+			print('pathes='+str(pathes))
+			for i in range(len(pathes)):
+				fullpath = _path+SPLIT_CHAR+pathes[i]
+				print('fullpath='+fullpath)
+				if os.path.isfile(fullpath):
+					names.append(fullpath)
+					files.append(open(fullpath).read().split('\n'))
+		'''
+			
+		print(len(names))
+
+		line_num = int(raw_input('every file`line num = '))
+		print('line number='+str(line_num))
+
+		for i in range(len(names)):
+			_name = names[i]
+			ori_name = _name.split(SPLIT_CHAR)[len(_name.split(SPLIT_CHAR))-1]
+			dir_name = _name.replace(ori_name,'DIR_'+ori_name)
+			dir_name = dir_name.replace('.','_')
+			print ori_name
+			print dir_name
+			os.system('mkdir '+dir_name)
+			count = 1
+			print '已处理：'+str(count)+'行'
+			part_file = open(dir_name+SPLIT_CHAR+str(0)+'.part.txt','w')
+			with open(_name, 'rb') as f:
+			    for line in f:
+				if count%line_num == 0:
+				    part_file.close()
+				    part_file = open(dir_name+SPLIT_CHAR+str(int(count/line_num))+'.part.txt','w')
+				part_file.write(line+'\n')
+				count+=1
+				if count%100000 == 0:
+				    print '已处理：'+str(count)+'行'
+			print '已处理：'+str(count)+'行'
+			os.system('python ./get_name_logfile.py '+dir_name)
+
+## 文件按照开始、结束行时间戳重命名
+
+用法：
+- python get_name_logfile.py log.txt
+- python get_name_logfile.py logs
+
+参数选择文件或者文件夹均可，如果是文件夹，则会针对文件夹中的每个文件做处理（不会递归到文件夹下文件夹中的文件哦）；
+
+代码如下：
+
+		# -*- coding:utf-8 -*-
+
+
+		import os,re,shutil
+		import sys
+		import platform
+
+		sys_name = platform.system().lower()
+		SPLIT_CHAR = '\\' if sys_name.find('windows') != -1 else '/'
+
+		_path = sys.argv[1]
+		names = []
+		files = []
+		pathes = []
+		if os.path.isfile(_path):
+			print('is file')
+			names[0] = _path
+		elif os.path.isdir(_path):
+			print('This is dir')
+			pathes = os.listdir(_path)
+			print('pathes='+str(pathes))
+			for i in range(len(pathes)):
+				fullpath = _path+SPLIT_CHAR+pathes[i]
+				print('fullpath='+fullpath)
+				if os.path.isfile(fullpath):
+					names.append(fullpath)
+		else:
+			print('is nothing')
+			
+		print(len(names))
+
+		#	日期格式 ： 05-26 18:20:42.093	r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}'
+		#	
+		#	05-26 18:20:43.093：r'\d{2}-\d{2} {1,}\d{2}:\d{2}:\d{2}.\d{1,10}'
+
+		date_reg = r'\d{2}-\d{2} {1,}\d{2}:\d{2}:\d{2}.\d{1,10}'
+		time_reg = r'\d{2}:\d{2}:\d{2}.\d{1,10}'
+
+		for i in range(len(names)):
+			_name = names[i]
+			print('name='+_name)
+			# head 尝试在10行内查找日期
+			head_len = 10
+			start_time = '(start_time-'
+			_file_ = open(_name, 'rb')
+			reads = _file_.read()
+			_file = reads.split('\n')
+			if len(_file)/2 < 10:
+				head_len = len(_file)/2
+			for j in range(head_len):
+				res = re.search(date_reg, _file[j])
+				if res!=None and res.group(0)!=None:
+					start_time = res.group(0)
+					print('start_time='+start_time)
+					break
+			# tail
+			tail_len = len(_file)-head_len
+			end_time = '-end_time)'
+			for j in range(len(_file)-1,tail_len-1,-1):
+				res = re.search(time_reg, _file[j])
+				if res!=None and res.group(0)!=None:
+					end_time = res.group(0)
+					print('end_time='+end_time)
+					break
+			_file_.close()
+			ori_name = _name.split(SPLIT_CHAR)[len(_name.split(SPLIT_CHAR))-1]
+			print('ori_name='+ori_name)
+			new_name = start_time.replace(':','-')+'__'+end_time.replace(':','-')+os.path.splitext(ori_name)[1]
+			print('new_name='+new_name)
+			print("copy %s %s" % (_name, _name.replace(ori_name,new_name)))
+			#os.system ("copy %s %s" % (_name, _name.replace(ori_name,new_name)))
+			shutil.copy(_name,_name.replace(ori_name,new_name))
+			os.system ("rm -rf "+_name)
+
+## 最后
+
+大家可以到我的Github上看看有没有其他需要的东西，目前主要是自己做的机器学习项目、Python各种脚本工具、数据分析挖掘项目以及Follow的大佬、Fork的项目等：
+https://github.com/NemoHoHaloAi
