@@ -30,6 +30,13 @@
 			</a>
 		</li>
 		{% endif %}
+		{% if site.author.kaggle %}
+		<li>
+			<a class="btn btn-default btn-sm" href="https://kaggle.com/{{ site.author.kaggle }}">
+				<i class="fa fa-kaggle fa-lg"></i>
+			</a>
+		</li>
+		{% endif %}
 		{% if site.author.email %}
 		<li>
 			<a class="btn btn-default btn-sm" href="mailto:{{ site.author.email }}">

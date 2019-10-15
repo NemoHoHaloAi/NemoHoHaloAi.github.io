@@ -48,6 +48,11 @@
 				<i class="fa fa-github"></i>
 			</a>
 			{% endif %}
+			{% if site.author.kaggle %}
+			<a type="button" class="navbar-toggle nav-link" href="http://kaggle.com/{{ site.author.kaggle }}">
+				<i class="fa fa-kaggle"></i>
+			</a>
+			{% endif %}
 			{% if site.author.twitter %}
 			<a type="button" class="navbar-toggle nav-link" href="http://twitter.com/{{ site.author.twitter }}">
 				<i class="fa fa-twitter"></i>
