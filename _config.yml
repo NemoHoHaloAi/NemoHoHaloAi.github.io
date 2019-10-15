@@ -5,16 +5,16 @@ paginate_path: "page:num"
 exclude: ["README.md"] # files to exclude
 highlighter: rouge
 markdown: kramdown
-disqus: dbyll
-google_analytics: dbyll
-title: dbyll
+disqus: Ho Loong disqus
+google_analytics: Ho Loong google analytics
+title: Ho Loong out title
 
 defaults:
   -
     scope:
       path: "" # empty string for all files
     values:
-      title: dbyll
+      title: Ho Loong Title
 
 description: Machine Learning, Data Analysis, Dev, Psychology, WOW
 author:
