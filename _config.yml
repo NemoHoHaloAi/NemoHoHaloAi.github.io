@@ -14,7 +14,7 @@ defaults:
     scope:
       path: "" # empty string for all files
     values:
-      title: Where Miracle Happen!
+      title: Where The Miracle Happens!
 
 description: Machine Learning, Data Analysis, Dev, Psychology, WOW
 author:
