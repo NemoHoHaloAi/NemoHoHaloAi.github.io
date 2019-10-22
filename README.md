@@ -27,7 +27,7 @@ https://nemohohaloai.github.io
 - Then - ```bundle exec jekyll serve```
 
 ## Screenshots
-![dbyll-screenshot](assets/media/dbyll-ss.png)
+![nemohohaloai-screenshot](assets/media/nemohohaloai-ss.png)
 
 ## License
 - [MIT](http://opensource.org/licenses/MIT)
