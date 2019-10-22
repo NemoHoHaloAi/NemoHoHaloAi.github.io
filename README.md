@@ -3,6 +3,9 @@ HoLoong
 
 Open source stylish, minimalistic theme for jekyll.  
 
+## Demo
+https://nemohohaloai.github.io
+
 ## New
 - :new: Check out [Paper](https://github.com/dbtek/paper), new Material Design Jekyll theme.
 
